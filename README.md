@@ -1,2 +1,2 @@
 # Shquery
-Catch shit queries 💩 before they hit production!
+Catch 💩 queries before they hit production!
