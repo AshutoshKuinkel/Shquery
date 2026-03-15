@@ -1,0 +1,1 @@
+# Scan sql files in repo as a start then be able to track down e.g. spring boot entities aswell
