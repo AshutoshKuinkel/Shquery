@@ -57,13 +57,63 @@ def extract_features(ast):
     
     "has_order_by" : ast.find(exp.Order) is not None,
     "has_limit" : ast.find(exp.Limit) is not None,
-    
+  
     "is_write_operation" : bool(ast.find(exp.Insert) or ast.find(exp.Update) or ast.find(exp.Delete))
   }
 
-statements = sqlglot.parse(source_code, dialect="postgres")
 
-for statement in statements:
-  if statement:
-    print(extract_features(statement))
-    print("----")
+def prase_explain(explain_rows):
+  raw = "\n".join(row[0] for row in explain_rows)
+    
+  import re
+  cost_match = re.search(r'cost=(\d+\.\d+)\.\.(\d+\.\d+)', raw)
+  rows_match = re.search(r'rows=(\d+)', raw)
+    
+  scan_type = "Unknown"
+  if "Bitmap Heap Scan" in raw:
+    scan_type = "Bitmap Heap Scan"
+  elif "Index Only Scan" in raw:
+    scan_type = "Index Only Scan"
+  elif "Index Scan" in raw:
+    scan_type = "Index Scan"
+  elif "Seq Scan" in raw:
+    scan_type = "Seq Scan"
+        
+  return {
+      "scan_type": scan_type,
+      "cost_start": float(cost_match.group(1)) if cost_match else None,
+      "cost_total": float(cost_match.group(2)) if cost_match else None,
+      "estimated_rows": int(rows_match.group(1)) if rows_match else None,
+      "raw_plan": raw
+  }
+    
+statements = sqlglot.parse(source_code, dialect="postgres")
+ddl_types={"Create","Drop","Insert","Alter","Truncate"}
+
+# DDL schemas first then only run explain,
+# else we'll get err when running EXPLAIN and
+# we don't have any tables or anything.
+with conn.cursor() as cur:
+  for statement in statements:
+    if statement and type(statement).__name__ in ddl_types:
+      try:
+        cur.execute(statement.sql(dialect="postgres"))
+        conn.commit()
+      except Exception as e:
+        print(f"DDL Err: {e}")
+        conn.rollback()
+        
+  for statement in statements:
+    if statement and type(statement).__name__ == "Select":
+      features = extract_features(statement)
+      
+      try:
+        cur.execute(f"EXPLAIN {statement.sql(dialect='postgres')}")
+        explain_output = prase_explain(cur.fetchall())
+        
+        print("features:",features)
+        print("EXPLAIN:", explain_output)
+        print("---")
+      except Exception as e:
+        print(f"EXPLAIN ERROR: {e}")
+        
