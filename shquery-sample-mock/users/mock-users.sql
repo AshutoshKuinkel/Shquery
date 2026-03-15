@@ -37,3 +37,12 @@ SELECT COUNT(*) FROM users;
 
 -- Preview 10 rows
 SELECT * FROM users LIMIT 10;
+
+-- no index, filtering on non-indexed column
+SELECT * FROM users WHERE email = 'test@example.com';
+
+-- wildcard LIKE, can't use index
+SELECT * FROM users WHERE first_name LIKE '%ohn%';
+
+-- then add an index and re-run the same queries
+CREATE INDEX idx_email ON users(email);
