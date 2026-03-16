@@ -1,6 +1,8 @@
 Core functionality:
 PR created → Spin up a very short lived postgres container → apply ddl queries from repo migrations e.g. create table.. → Scan codebase for SQL queries → Run EXPLAIN on each one → Flag anything with Seq Scan and high cost → Leave comment on pr
 
+Add a workload simulation using golang for this aswell
+
 E.g.:
 Seq Scan on 1M rows? → flag it
 Missing index on WHERE column? → flag it
