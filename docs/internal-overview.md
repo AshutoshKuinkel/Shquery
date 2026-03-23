@@ -26,4 +26,3 @@ Then we get structure our RAW SQL we get from OTEL in a json with db.statement e
 Run workload sims etc..
 Handle ML regression logic
 Leave comment on pr
-
