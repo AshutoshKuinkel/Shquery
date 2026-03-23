@@ -17,3 +17,7 @@ This is why the smoke script works perfectly, single process, single SDK instanc
 
 
 I may have to run jaeger or something like this, maybe only way I can get it working...
+
+---
+
+Forget about all this... using PostgreSQL json logging finally worked to fetch all queries at runtime... now just need to parse,normalise,run explain analyse, workloads sims + ML....
