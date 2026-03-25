@@ -13,5 +13,5 @@ ML:
 
 2. Optimisation suggestions, i.e. learning from your codebase's history. "Every query on this table that had a Seq Scan and then got an index added saw X% improvement" → proactively suggest the same fix on new queries.
 
-Core limitation: Coverage of tool is directly proportional to the coverage of integeration/e2e tests... Codebases with greater coverage, especially on non-trivial APIs, naturally are more likely to benefit from tool.
+Core limitation: Coverage of tool is directly proportional to the coverage of integeration/e2e tests... Codebases with greater coverage, especially on non-trivial APIs, naturally are more likely to benefit from tool. Maybe, there is a way I can efficeintly combine a static extraction of queries in codebase (without having to maintain different parser for each language) with this postgreSQL json logging to increase coverage. However, this is a task for later. Core functionality with limitation is first priority.
 ---
