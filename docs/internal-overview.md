@@ -1,13 +1,10 @@
 Core functionality:
-PR created → Spin up a very short lived postgres container → apply ddl queries from repo migrations e.g. create table.. → Scan codebase for SQL queries → Run EXPLAIN on each one → Flag anything with Seq Scan and high cost → Leave comment on pr
-
-Change model -> 
+PR created → Spin up a very short lived postgres container with logging enabled → run integration/e2e tests → capture SQL queries @ run time→ Run EXPLAIN ANALYZE on each one → Flag anything with Seq Scan and high cost → RUN workload sims → ML regression calculation/optimisation suggestions → Leave comment on pr → shut down the short lived db and everything
 
 Add a workload simulation using golang for this aswell
 
 E.g.:
 Seq Scan on 1M rows? → flag it
-Missing index on WHERE column? → flag it
 Cost jumped vs previous PR? → flag it
 
 ML:
@@ -16,13 +13,5 @@ ML:
 
 2. Optimisation suggestions, i.e. learning from your codebase's history. "Every query on this table that had a Seq Scan and then got an index added saw X% improvement" → proactively suggest the same fix on new queries.
 
+Core limitation: Coverage of tool is directly proportional to the coverage of integeration/e2e tests... Codebases with greater coverage, especially on non-trivial APIs, naturally are more likely to benefit from tool.
 ---
-
-Update: New way to go about this...
-User Spins up integration tests
-Spin up ephermal db
-We'll have to use OTEL (generates and expors telemetry (traces, metrics, logs) from your code)
-Then we get structure our RAW SQL we get from OTEL in a json with db.statement etc... and run EXPLAIN/EXPLAIN ANALYZE on it
-Run workload sims etc..
-Handle ML regression logic
-Leave comment on pr
