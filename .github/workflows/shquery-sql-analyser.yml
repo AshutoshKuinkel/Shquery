@@ -52,3 +52,5 @@ jobs:
         run: ${{inputs.test-command}} #Calling user inputs, defined above
         env:
           DATABASE_URL: ${{inputs.database-url-env}}:add-db-link #TO DO: set default, db link
+
+    # TO DO: throw the logs into python file to parse and extract clean queries specifically, then continue working through running analysis.
