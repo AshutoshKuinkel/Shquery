@@ -1,3 +1,54 @@
-# to do: implement flow of tool during integration tests/e2e etc..
+# reference: 
+# https://docs.github.com/en/actions/tutorials/use-containerized-services/create-postgresql-service-containers
+# https://oneuptime.com/blog/post/2025-12-20-database-testing-github-actions/view
 
 name: Shquery SQL Analyser
+
+# runs on workflow_call: 
+on: 
+  workflow_call:
+    # user will need to pass these inputs in depending on their own language, e.g. npm test or mvnw test
+    inputs:
+      test-command:
+        required: true
+        type: string
+      database-url-env:
+        required: false
+        type: string
+        default: '' #TO DO: add default database url
+jobs:
+  analyse:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        # docker hub image
+        image: postgres:16-alpine
+
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        # Set health checks to wait until postgres has started + logging to extract sql queries from tests that hit db
+        # Interesting note regarding log_min_duration; 'Enabling this parameter can be helpful in tracking down unoptimized queries in your applications.'
+        # Ref: (https://www.postgresql.org/docs/current/runtime-config-logging.html#RUNTIME-CONFIG-LOGGING-WHERE)
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          postgres
+          -c log_statement=all
+          -c logging_collector=on
+          -c log_destination=jsonlog
+          -c log_directory=/tmp/logs
+          -c log_filename=queries
+          -c log_min_duration_statement=0
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tests
+        run: ${{inputs.test-command}} #Calling user inputs, defined above
+        env:
+          DATABASE_URL: ${{inputs.database-url-env}}:add-db-link #TO DO: set default, db link
