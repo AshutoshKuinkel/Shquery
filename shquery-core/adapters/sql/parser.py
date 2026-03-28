@@ -4,22 +4,9 @@
 
 import json;
 
-# replicate something like this inside function, but make sure we only extract sql queries not anything else.
-# json_file = "C:\Users\ashut\Desktop\shquery\shquery-sample-mock\logs\queries.json.json"
-# try:
-#   with open(json_file,'r') as sql_queries_file:
-#     captured_queries = json.load(sql_queries_file)
-# except FileNotFoundError:
-#   raise FileNotFoundError(f"{json_file} not found!")
-# except json.JSONDecodeError:
-#   raise json.JSONDecodeError(f"JSON @ {json_file} malformed, or incorrectly formatted!")
-    
-# print(json.dumps(captured_queries, indent=4))
-
-
 def extract_sql_queries(json_lines_file_path:str):
   """
-  Extract SQL queries from JSONL (`JSON-Lines <https://jsonltools.com/what-is-jsonl>`_) log file.
+  Extract SQL queries from JSONL ( `JSON-Lines <https://jsonltools.com/what-is-jsonl>`_) log file.
 
   Args:
     json_lines_file_path (string): Path to the JSONL log file.
@@ -30,4 +17,13 @@ def extract_sql_queries(json_lines_file_path:str):
             - 'timestamp' (str | None): Timestamp from the log entry
             - 'pid' (int | None): Process ID from the log entry
   """
+  try:
+    with open(json_lines_file_path,'r') as log_file:
+      # filter to catch sql queries only...
+      # we could read the whole file and scan for certain keywords to filter for sql queries only
+      # but is there a more efficient way of filtering out only SQL queries?? ahh I don't think so,
+      # either way O(N) time complexity will be required...
+      pass
+  except FileNotFoundError:
+    raise FileNotFoundError(f"{json_lines_file_path} not found!")
   
