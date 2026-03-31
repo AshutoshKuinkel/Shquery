@@ -41,7 +41,7 @@ def extract_sql_queries(json_lines_file_path:str)->list:
         
         dml_query = py_obj_query.get('message','')
         if dml_query.startswith('execute'):
-          # TO DO: strip the exectue queries, those are what we need... then just add normalisation/deduplication
+          # TO DO: handle \n cases... then just add normalisation/deduplication
           sql = dml_query.split(":",1)[1].strip()
           clean_queries.append(sql)
         else:
