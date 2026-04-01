@@ -25,6 +25,7 @@ def extract_sql_queries(json_lines_file_path:str)->list:
   # filter to catch sql queries only...
   # reading log line by line, adding it to a dict w/ deduplication/normalisation. T:O(N) S:O(N)
   # normalisation with pg_query... & then run EXPLAIN for costs plan... 
+  # also add a count frequency after normalisation/deduplication which will help performance analysis, identifying hot queries/deciding what to optimise
   
   # this is only a list for testing purposes, but lookups in list take O(N) and in dicts take O(1) time, so change to dict for performance..
   clean_queries = []
@@ -41,8 +42,8 @@ def extract_sql_queries(json_lines_file_path:str)->list:
         
         dml_query = py_obj_query.get('message','')
         if dml_query.startswith('execute'):
-          # TO DO: handle \n cases... then just add normalisation/deduplication
-          sql = dml_query.split(":",1)[1].strip()
+          # TO DO:add normalisation/deduplication
+          sql = dml_query.split(":",1)[1].replace("\\n"," ").replace("\n"," ").strip()
           clean_queries.append(sql)
         else:
           continue
