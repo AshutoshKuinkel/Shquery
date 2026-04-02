@@ -9,6 +9,8 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+# thought: set would be good for deduplication, as we avoid having exact same query more than once, also note set is basically dict w/out the keys, so still O(1) lookups..
+# Im thinking maybe we could store in dict, then deduplicate by storing in set, then add to dict again, or maybe just add to a set right away..
 
 def extract_sql_queries(json_lines_file_path:str)->list:
   """
@@ -44,6 +46,8 @@ def extract_sql_queries(json_lines_file_path:str)->list:
         if dml_query.startswith('execute'):
           # TO DO: add normalisation/deduplication
           sql = dml_query.split(":",1)[1].replace("\\n"," ").replace("\n"," ").strip()
+          # removing whitespace, we may be affecting performance by doing 2 passes...
+          sql = " ".join(sql.split())
           clean_queries.append(sql)
         else:
           continue
