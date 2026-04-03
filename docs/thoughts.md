@@ -21,3 +21,10 @@ I may have to run jaeger or something like this, maybe only way I can get it wor
 ---
 
 Forget about all this... using PostgreSQL json logging finally worked to fetch all queries at runtime... now just need to parse,normalise,run explain analyse, workloads sims + ML....
+
+---
+
+thought: set would be good for deduplication, as we avoid having exact same query more than once, also note set is basically dict w/out the keys, so still O(1) lookups..
+Im thinking maybe we could store in dict, then deduplicate by storing in set, then add to dict again, or maybe just add to a set right away..
+ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This isn't a worry,
