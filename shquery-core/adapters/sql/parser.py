@@ -62,6 +62,8 @@ def normalise_and_filter(queries: list[str]) -> list[str]:
   '''
   clean_queries = []
   
+  DDL_WORDS = {'create', 'alter', 'drop', 'truncate', 'comment', 'rename'}
+  
   for q in queries:
     sql = " ".join(q.split()).lower()
     
@@ -72,10 +74,56 @@ def normalise_and_filter(queries: list[str]) -> list[str]:
     
     return clean_queries
   
+def tallied_queries(clean_queries: list[str]) -> dict:
+  '''
+    Process each normalised/filtered query to include hash,count and final query before passing to EXPLAIN.
+    
+    Args:
+      queries (list[str]): Cleaned DML-only SQL strings.
+      
+    Returns:
+      dict: Keyed by short hash, each value containing:
+            - 'sql' (str): The normalised SQL query
+            - 'count' (int): Execution frequency
+            - 'hash' (str): Short hash for referencing in reports
+
+  '''
+  processed_queries = {}
   
+  for query in clean_queries:
+    
+    # hash query + store in hex form for readability/cleanliness:
+    hashed_query = hashlib.md5(query.encode()).hexdigest()[:8]
+    
+    
+    if hashed_query in processed_queries:
+      # increment count by 1
+      processed_queries[hashed_query]['count'] += 1
+    else:
+      # add finalised hashed query, sql query string & count to processed_queries
+      processed_queries[hashed_query] = {
+        "hash" : hashed_query,
+        "query" : query,
+        "count" : 1
+      }
+      
+  return processed_queries
   
-if __name__ == "__main__":
-  print(extract_raw_sql_queries(os.getenv('JSONL_FILE_PATH')))
+def build_query_stats(path: str) -> dict:
+    """
+    Full pipeline: extract, normalise, aggregate.
+
+    Args:
+        path (str): Path to the JSONL log file.
+
+    Returns:
+        dict: Deduplicated query store with counts.
+    """
+    raw = extract_raw_sql_queries(path)
+    cleaned = normalise_and_filter(raw)
+    return tallied_queries(cleaned)
+  
+
   
 
 
