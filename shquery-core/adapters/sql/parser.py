@@ -19,6 +19,8 @@ load_dotenv()
 # then run EXPLAIN for costs plan... 
 # also add a count frequency after normalisation/deduplication which will help performance analysis, identifying hot queries/deciding what to optimise
 
+DDL_WORDS = {'create', 'alter', 'drop', 'truncate', 'comment', 'rename'}
+  
 def extract_raw_sql_queries(json_lines_file_path:str)-> list[str]:
   """
   Extract SQL queries from JSONL ( `JSON-Lines <https://jsonltools.com/what-is-jsonl>`_) log file.
@@ -62,17 +64,15 @@ def normalise_and_filter(queries: list[str]) -> list[str]:
   '''
   clean_queries = []
   
-  DDL_WORDS = {'create', 'alter', 'drop', 'truncate', 'comment', 'rename'}
-  
   for q in queries:
     sql = " ".join(q.split()).lower()
     
-    if sql.split[0] in DDL_WORDS:
+    if sql.split()[0] in DDL_WORDS:
       continue
     
     clean_queries.append(sql)
     
-    return clean_queries
+  return clean_queries
   
 def tallied_queries(clean_queries: list[str]) -> dict:
   '''
@@ -124,7 +124,8 @@ def build_query_stats(path: str) -> dict:
     return tallied_queries(cleaned)
   
 
-  
+if __name__ == "__main__":
+  print(build_query_stats(os.getenv("JSONL_FILE_PATH")))
 
 
   
