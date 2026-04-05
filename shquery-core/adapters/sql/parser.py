@@ -107,7 +107,7 @@ def tallied_queries(clean_queries: list[str]) -> dict:
   
 def build_query_stats(path: str) -> dict:
     """
-    Full pipeline: extract, normalise, aggregate.
+    Full pipeline: extract, normalise, finalise.
 
     Args:
         path (str): Path to the JSONL log file.
