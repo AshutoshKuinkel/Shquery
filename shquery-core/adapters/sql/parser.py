@@ -15,7 +15,7 @@ load_dotenv()
 
 # approach:
 # filter to catch sql queries only...
-# reading log line by line, adding it to a dict w/ deduplication/normalisation. T:O(N) S:O(N)
+# reading log line by line, adding it to a dict w/ deduplication/normalisation.
 # then run EXPLAIN for costs plan... 
 # also add a count frequency after normalisation/deduplication which will help performance analysis, identifying hot queries/deciding what to optimise
 
