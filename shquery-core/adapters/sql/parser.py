@@ -11,13 +11,11 @@ import hashlib;
 from dotenv import load_dotenv
 load_dotenv()
 
-#  the key worry is more so, how do I determine what makes 2 queries the same for deduplication...
+# TO DO: figure out how to determine what makes 2 queries same for deduplication, i.e. SELECT * FROM users where id=123 & SELECT * FROM users where id=456
 
 # approach:
-# filter to catch sql queries only...
-# reading log line by line, adding it to a dict w/ deduplication/normalisation.
+# filter to catch sql queries only (deduplication/normalisation included), load into dict w/ hash, query & count (count could help identifying hot queries/what to optimise etc..)...
 # then run EXPLAIN for costs plan... 
-# also add a count frequency after normalisation/deduplication which will help performance analysis, identifying hot queries/deciding what to optimise
 
 DDL_WORDS = {'create', 'alter', 'drop', 'truncate', 'comment', 'rename'}
   
@@ -97,10 +95,8 @@ def tallied_queries(clean_queries: list[str]) -> dict:
     
     
     if hashed_query in processed_queries:
-      # increment count by 1
       processed_queries[hashed_query]['count'] += 1
     else:
-      # add finalised hashed query, sql query string & count to processed_queries
       processed_queries[hashed_query] = {
         "hash" : hashed_query,
         "query" : query,
