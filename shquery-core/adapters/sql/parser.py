@@ -4,6 +4,9 @@
 # https://www.geeksforgeeks.org/python/json-loads-in-python
 # DDL VS DML: https://www.geeksforgeeks.org/dbms/difference-between-ddl-and-dml-in-dbms
 # MD5: https://www.geeksforgeeks.org/python/md5-hash-python/
+'''
+  TO DO: Write module docstring
+'''
 
 import json;
 import os
