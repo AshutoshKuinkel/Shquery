@@ -1,12 +1,53 @@
-# purpose: extract clean queries from json file
-# references: 
-# https://www.geeksforgeeks.org/python/read-json-file-using-python
-# https://www.geeksforgeeks.org/python/json-loads-in-python
-# DDL VS DML: https://www.geeksforgeeks.org/dbms/difference-between-ddl-and-dml-in-dbms
-# MD5: https://www.geeksforgeeks.org/python/md5-hash-python/
-'''
-  TO DO: Write module docstring
-'''
+
+"""
+SQL Query Extraction and Normalisation Pipeline.
+
+This module provides utilities to extract SQL queries from a JSON Lines (JSONL)
+log file, clean and normalise them, filter out DDL statements, and aggregate
+duplicate queries using hashing.
+
+The pipeline is designed to support query analysis workflows such as identifying
+high-frequency queries and preparing inputs for database EXPLAIN plan evaluation.
+
+Key Features:
+- Parses JSONL logs and extracts SQL queries from structured log messages.
+- Filters only executable SQL statements (e.g. messages starting with "execute").
+- Normalises queries (whitespace standardisation and lowercasing).
+- Excludes DDL statements (e.g. CREATE, DROP, ALTER).
+- Deduplicates queries using MD5 hashing.
+- Counts query frequency to highlight "hot" queries.
+
+Typical Workflow:
+    1. Extract raw SQL queries from a JSONL log file.
+    2. Normalise and filter queries (retain DML only).
+    3. Aggregate queries into a dictionary keyed by a short hash.
+    4. Use results for further analysis (e.g. EXPLAIN plans, optimisation).
+
+Example:
+    >>> stats = build_query_stats("logs.jsonl")
+    >>> stats["a1b2c3d4"]
+    {
+        "hash": "a1b2c3d4",
+        "query": "select * from users where id=123",
+        "count": 42
+    }
+
+Notes:
+- Deduplication is based on exact string matches after normalisation. Queries
+  differing only in literal values (e.g. IDs) are currently treated as distinct.
+- Future improvements may include query parameterisation to improve grouping.
+
+Dependencies:
+- json
+- hashlib
+- python-dotenv (for environment variable loading)
+
+References:
+- JSONL format: https://jsonltools.com/what-is-jsonl
+- Python JSON handling: https://www.geeksforgeeks.org/python/read-json-file-using-python
+- DDL vs DML: https://www.geeksforgeeks.org/dbms/difference-between-ddl-and-dml-in-dbms
+- MD5 hashing: https://www.geeksforgeeks.org/python/md5-hash-python/
+"""
 
 import json;
 import os
