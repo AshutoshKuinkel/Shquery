@@ -1,13 +1,8 @@
 
 """
-SQL Query Extraction and Normalisation Pipeline.
-
 This module provides utilities to extract SQL queries from a JSON Lines (JSONL)
 log file, clean and normalise them, filter out DDL statements, and aggregate
 duplicate queries using hashing.
-
-The pipeline is designed to support query analysis workflows such as identifying
-high-frequency queries and preparing inputs for database EXPLAIN plan evaluation.
 
 Key Features:
 - Parses JSONL logs and extracts SQL queries from structured log messages.
@@ -36,11 +31,6 @@ Notes:
 - Deduplication is based on exact string matches after normalisation. Queries
   differing only in literal values (e.g. IDs) are currently treated as distinct.
 - Future improvements may include query parameterisation to improve grouping.
-
-Dependencies:
-- json
-- hashlib
-- python-dotenv (for environment variable loading)
 
 References:
 - JSONL format: https://jsonltools.com/what-is-jsonl
