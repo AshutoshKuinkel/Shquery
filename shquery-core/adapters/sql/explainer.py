@@ -1,6 +1,22 @@
-# purpose: run EXPLAIN to receive quick & efficient cost plan on queries. Frontline checking before workload sim.
 '''
-TO DO: Write up module docstring
+This module is responsible for efficeintly retrieving COST PLANS for SQL queries.
+It runs on the SQL queries collected and stored using parser module. The 
+COST/EXECUTION PLANS are gathered using the EXPLAIN keyword in sql.
+
+The main purpose of this module in the workflow is to help alert developers on 
+queries that may potentially be problematic in their own workflows, i.e. catch
+sequential scans when no index present etc. This tool doesn't strictly serve as a
+guard pointing to a query and saying this query is bad, instead it finds potential
+problematic queries and alerts the developer. This module assists us in acheiving
+this goal quickly and efficiently, acting as a frontline check before the workload
+simulations (designed to reveal issues under load).
+
+A drawback is that the tooling assumes integration tests are similar and mostly mirror
+queries in production. The efficiency of the tooling is directly proportonial to
+the amount of integration,e2e etc.. tests featured. It is also not 100% guaranteed to 
+catch all queries that could cause problems in real-world software.
+
+TO DO: MENTION APPROACH...
 '''
 
 import parser;
